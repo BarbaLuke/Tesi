@@ -36,6 +36,8 @@ gradle.properties
 .dockerignore
 .launch.classpath
 plugins-prod
-/home/luca/Tesi/intermediate/FASTQ/SRR12351612_1.fastq.gz
 /intermediate/FASTQ/*.fastq
 /intermediate/FASTQ/*.fastq.gz
+/intermediate/BAM/*.bam
+/intermediate/COVERAGE/*.txt
+/intermediate/VCF/*.vcf

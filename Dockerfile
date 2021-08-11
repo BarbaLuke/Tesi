@@ -11,6 +11,7 @@ RUN apt-get update -y \
 RUN wget http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.0/sratoolkit.2.8.0-ubuntu64.tar.gz
 RUN tar xzvf sratoolkit.2.8.0-ubuntu64.tar.gz  --owner root --group root --no-same-owner
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
+ADD makeSNVlist.R /working/
 
 # can't install sratoolkit couse interactive configuration
 

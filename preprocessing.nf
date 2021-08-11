@@ -71,7 +71,7 @@ genomeFAch = Channel.value(file(params.fasta))
 
 process Generate_Ref_files {
     // utilizzo l'immagine che ho creato a partire dal dockerfile in cartella
-    container 'samtools_bwa'
+    container 'tutto'
 
     // l'output del comando lo salvo nella stessa cartella del reference
     storeDir "${genomeFA.toRealPath().getParent()}"
@@ -197,8 +197,8 @@ process Alignment_and_sorting_paired {
 
 process FASTQs_download_single {
   
-  conda 'bioconda::sra-tools=2.11'
-  
+  //conda 'bioconda::sra-tools=2.11'
+  container 'tutto'
   storeDir params.FASTQdir
 
   tag "${SRR}" 
@@ -219,8 +219,8 @@ process FASTQs_download_single {
 
 process Trimming_single { 
  
-  conda 'bioconda::trimmomatic=0.39'
-  
+  //conda 'bioconda::trimmomatic=0.39'
+  container 'tutto'
   tag "${fastq.simpleName}"
   
   input:
@@ -246,8 +246,8 @@ process Trimming_single {
 
 process Alignment_and_sorting_single {
  
-  conda 'bioconda::bwa=0.7 bioconda::samtools=1.12'
-  
+  //conda 'bioconda::bwa=0.7 bioconda::samtools=1.12'
+  container 'tutto'
   storeDir params.BAMdir
   
   tag "${SRR}"
@@ -281,7 +281,9 @@ process Alignment_and_sorting_single {
 // ######################################################
 
 process Remove_duplicated_reads {
-  conda 'bioconda::picard=2.18'
+  //conda 'bioconda::picard=2.18'
+
+  container 'tutto'
   
   storeDir params.BAMdir
   
@@ -297,13 +299,15 @@ process Remove_duplicated_reads {
   params.remove_duplicates
   
   """
-  picard MarkDuplicates I=${sorted_bam} O=${SRR}.nodup.sorted.bam M=${SRR}.nodup.sorted.metrics.txt REMOVE_DUPLICATES=true
+  PicardCommandLine MarkDuplicates I=${sorted_bam} O=${SRR}.nodup.sorted.bam M=${SRR}.nodup.sorted.metrics.txt REMOVE_DUPLICATES=true
   """
 }
 
 process Extract_coverage_nodup {
 
-  conda 'bioconda::samtools=1.12'
+  //conda 'bioconda::samtools=1.12'
+
+  container 'tutto'
   
   storeDir params.COVERAGEdir
   
@@ -326,7 +330,9 @@ process Extract_coverage_nodup {
 
 process Extract_coverage {
 
-  conda 'bioconda::samtools=1.12'
+  //conda 'bioconda::samtools=1.12'
+
+  container 'tutto'
   
   storeDir params.COVERAGEdir
   
@@ -350,7 +356,9 @@ process Extract_coverage {
 
 process Variant_calling_nodup {
 
-  conda 'bioconda::samtools=1.12 bioconda::varscan=2.4.3'
+  //conda 'bioconda::samtools=1.12 bioconda::varscan=2.4.3'
+
+  container 'tutto'
   
   storeDir params.VCFdir
   
@@ -383,7 +391,9 @@ process Variant_calling_nodup {
 
 process Variant_calling {
 
-  conda 'bioconda::samtools=1.12 bioconda::varscan=2.4.3'
+  //conda 'bioconda::samtools=1.12 bioconda::varscan=2.4.3'
+
+  container 'tutto'
   
   storeDir params.VCFdir
   
@@ -414,6 +424,8 @@ process Variant_calling {
 }
 
 process make_SNV_list {
+
+  container 'tutto'
   
   publishDir params.SNVlistdir, mode:'move'
   
@@ -427,7 +439,6 @@ process make_SNV_list {
   
   script:
   """
-  makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${params.SNV_filters}
+  Rscript /working/makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${params.SNV_filters}
   """
-
-} */
+} 
