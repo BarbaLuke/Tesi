@@ -41,3 +41,6 @@ plugins-prod
 /intermediate/BAM/*.bam
 /intermediate/COVERAGE/*.txt
 /intermediate/VCF/*.vcf
+/intermediate/FASTQ/Others
+/reference/*.bt2
+/reference/*.fai
