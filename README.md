@@ -23,6 +23,11 @@ At the end of the execution the image will have been created starting from Docke
 ## How to use
 ***
 Once created the Docker image you have only to run this command:
+* for SARS-CoV-2 example
 ```
 $ ./nextflow run preprocessing.nf -with-docker preprocessing
+```
+* for HIV example
+```
+$ ./nextflow run preprocessing_HIV.nf -with-docker preprocessing -c nextflow_HIV.config
 ```
