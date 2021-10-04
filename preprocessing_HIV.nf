@@ -7,7 +7,7 @@ if(file(params.FASTQ_input).isFile()) {
 
   FASTQ_files_paired = Channel.empty()
   FASTQ_files_single = Channel.empty()
-  params.download = true
+  params.download = false
       
 }else if(file(params.FASTQ_input).isDirectory()){
   if(params.library_preparation == 'paired') {
@@ -97,7 +97,7 @@ process Trimming_paired {
   output:
   tuple val("${SRR}"), 
         path("${SRR}_1.trim.fastq.gz"), 
-        path("${SRR}_2.trim.fastq.gz") into TRIMMED_paired
+        path("${SRR}_2.trim.fastq.gz") into TRIMMED_paired_1
             
   when:
   params.library_preparation == 'paired'
@@ -111,6 +111,24 @@ process Trimming_paired {
   ${SRR}_1.trim.fastq.gz ${SRR}_1_unpaired.trim.fastq.gz \
   ${SRR}_2.trim.fastq.gz ${SRR}_2_unpaired.trim.fastq.gz \
   ${params.trimmomatic_setting}
+  """
+}
+
+process fastq_screen_paired {
+  storeDir params.fastqScreenDir
+  
+  input:
+  tuple val(SRR), path(fastq_1), path(fastq_2) from TRIMMED_paired_1
+
+  output:
+  tuple val(SRR), path(fastq_1), path(fastq_2) into TRIMMED_paired
+  path("${fastq_1}_screen.*") 
+
+  when:
+  params.library_preparation == 'paired'
+
+  """
+  fastq_screen --conf /working/fastq-screen/fastq-screen.conf --aligner bwa ${fastq_1}
   """
 }
 
@@ -137,7 +155,6 @@ process Alignment_and_sorting_paired {
   | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
   """
 }
-
 
 // ############## SINGLE READS ################
 
@@ -170,7 +187,7 @@ process Trimming_single {
       
   output:
   tuple val("${fastq.simpleName}"), 
-        path("${fastq.simpleName}.trim.fastq.gz") into TRIMMED_single
+        path("${fastq.simpleName}.trim.fastq.gz") into TRIMMED_single_1
             
   when:
   params.library_preparation == 'single'
@@ -183,6 +200,24 @@ process Trimming_single {
   ${fastq} \
   ${fastq.simpleName}.trim.fastq.gz \
   ${params.trimmomatic_setting}
+  """
+}
+
+process fastq_screen {
+  storeDir params.fastqScreenDir
+  
+  input:
+  tuple val(SRR), path(fastq) from TRIMMED_single_1
+
+  output:
+  tuple val(SRR), path(fastq) into TRIMMED_single
+  path("${fastq}_screen.*") 
+
+  when:
+  params.library_preparation == 'single'
+
+  """
+  fastq_screen --conf /working/fastq-screen/fastq-screen.conf --aligner bwa ${fastq}
   """
 }
 

@@ -29,9 +29,9 @@ def SetFastqFiles_paired(input) {
         FASTQ_files_single = Channel.empty()
     }else if( file(input).isDirectory() ){
         params.download = false
-        FASTQ_files_paired = Channel.fromFilePairs("${params.FASTQ_input}/*_{1,2}.fastq*")
+        return FASTQ_files_paired = Channel.fromFilePairs("${params.FASTQ_input}/*_{1,2}.fastq*")
         FASTQ_files_single = Channel.empty()
-        SRRnum = new File(params.FASTQ_input).listFiles().count { it.name ==~ /.*1\.fastq.*/ }
+        return SRRnum = new File(params.FASTQ_input).listFiles().count { it.name ==~ /.*1\.fastq.*/ }
         SRRlist_paired = Channel.empty()
         SRRlist_single = Channel.empty()
     }else{

@@ -8,9 +8,15 @@ RUN apt-get update -y \
 && apt install -y varscan \
 && wget http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.0/sratoolkit.2.8.0-ubuntu64.tar.gz \
 && tar xzvf sratoolkit.2.8.0-ubuntu64.tar.gz  --owner root --group root --no-same-owner \
-&& apt install -y bowtie2
+&& apt install -y bowtie2 \
+&& apt install -y perl \
+&& apt install -y libgd-graph-perl \
+&& wget https://github.com/StevenWingett/FastQ-Screen/archive/refs/tags/v0.14.1.tar.gz \
+&& tar -xzf v0.14.1.tar.gz
 
+ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
-# need this script to run the last process of pipeline
+
 ADD makeSNVlist.R /working/
-# ADD reference/Reference_HIV_1(HXB2).fasta /working/
+ADD FastQ-Screen/fastq-screen.conf /working/fastq-screen/
+ADD FastQ-Screen/index /working/fastq-screen/index

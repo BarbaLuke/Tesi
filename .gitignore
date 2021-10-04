@@ -44,3 +44,4 @@ plugins-prod
 /intermediate/FASTQ/Others
 /reference/*.bt2
 /reference/*.fai
+/FastQ-Screen/*
