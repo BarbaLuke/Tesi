@@ -1,4 +1,4 @@
-process FASTQs_download_paired {
+process FASTQs_download {
 
   storeDir params.FASTQdir
 
@@ -6,28 +6,20 @@ process FASTQs_download_paired {
 
   input:
   val SRR
+
+  output:
+  tuple val("${SRR}"), path("${SRR}.fastq.gz") optional true
+  tuple val("${SRR}"), path("${SRR}_*.fastq.gz") optional true
         
-  output:
-  tuple val(SRR), path("${SRR}_*.fastq.gz")
+  script:
 
-  """
-  fastq-dump --split-files --gzip ${SRR}
-  """
-}
-
-process FASTQs_download_single {
-
-  storeDir params.FASTQdir
-
-  tag "${SRR}" 
-      
-  input:
-  val SRR
-    
-  output:
-  path "${SRR}.fastq.gz"
-      
-  """
-  fastq-dump --gzip ${SRR}
-  """
+  if(params.library_preparation == 'single'){
+    """
+    fastq-dump --gzip ${SRR}
+    """
+  }else{
+    """
+    fastq-dump --split-files --gzip ${SRR}
+    """
+  }
 }

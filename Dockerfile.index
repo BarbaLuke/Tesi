@@ -1,0 +1,8 @@
+FROM ubuntu:20.04
+
+RUN apt-get update -y \
+&& apt-get install -y samtools trimmomatic  \
+&& apt install -y wget \
+&& apt install -y bwa \
+&& apt install -y bowtie2 
+

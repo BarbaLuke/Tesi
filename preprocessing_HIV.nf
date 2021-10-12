@@ -97,7 +97,7 @@ process Trimming_paired {
   output:
   tuple val("${SRR}"), 
         path("${SRR}_1.trim.fastq.gz"), 
-        path("${SRR}_2.trim.fastq.gz") into TRIMMED_paired_1
+        path("${SRR}_2.trim.fastq.gz") into TRIMMED_paired
             
   when:
   params.library_preparation == 'paired'
@@ -114,15 +114,15 @@ process Trimming_paired {
   """
 }
 
-process fastq_screen_paired {
+process Fastq_screen_paired {
   storeDir params.fastqScreenDir
   
   input:
-  tuple val(SRR), path(fastq_1), path(fastq_2) from TRIMMED_paired_1
+  tuple val(SRR), path(fastq_1), path(fastq_2) from TRIMMED_paired
 
   output:
-  tuple val(SRR), path(fastq_1), path(fastq_2) into TRIMMED_paired
-  path("${fastq_1}_screen.*") 
+  tuple val(SRR), path(fastq_1), path(fastq_2) into TRIMMED_paired_post_screen
+  tuple path("${SRR}_1_screen.txt"), path("${SRR}_1_screen.png"), path("${SRR}_1_screen.html") into Screen_files
 
   when:
   params.library_preparation == 'paired'
@@ -132,6 +132,35 @@ process fastq_screen_paired {
   """
 }
 
+process Trimming_screen_paired {
+
+  input:
+  tuple path(txt), path(png), path(html) from Screen_files
+
+  output:
+  path("procedi.txt") into Alt
+  """
+  tail -n +2 ${txt} > prova_1_screen_2.txt
+  head -n +3 prova_1_screen_2.txt > ${txt}
+  Rscript /working/scriptino.R "${txt}" > procedi.txt
+  """
+}
+/*
+process Yes_or_not {
+  input:
+  path(siOno) from Da_processare
+  output:
+  val(Si) into Facciamolo
+
+  script:
+  Si = siOno.getText()
+  """
+  echo ${Si}
+  """
+
+}
+*/
+
 process Alignment_and_sorting_paired {
 
   storeDir params.BAMdir
@@ -139,20 +168,28 @@ process Alignment_and_sorting_paired {
   tag "${SRR}"
       
   input:
+  path(siOno) from Alt
   path "genome.fasta" from genomeFAch 
   path HIV_1 from genomeIndexed
-        
-  tuple val(SRR), path(fastq_1), path(fastq_2) from TRIMMED_paired
+  tuple val(SRR), path(fastq_1), path(fastq_2) from TRIMMED_paired_post_screen
       
   output:
   tuple val(SRR), path("${SRR}.sorted.bam") into SORTED_paired_depth, SORTED_paired_nodup, SORTED_paired_calling 
       
   when:
   params.library_preparation == 'paired'
+
+  script:
+  Si = siOno.getText()
       
+  if(Si == "yes")
   """
   bowtie2 -x HIV_1 -1 ${fastq_1} -2 ${fastq_2} \
   | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
+  """
+  else
+  """
+  echo "saltato"
   """
 }
 
@@ -187,7 +224,7 @@ process Trimming_single {
       
   output:
   tuple val("${fastq.simpleName}"), 
-        path("${fastq.simpleName}.trim.fastq.gz") into TRIMMED_single_1
+        path("${fastq.simpleName}.trim.fastq.gz") into TRIMMED_single
             
   when:
   params.library_preparation == 'single'
@@ -203,21 +240,34 @@ process Trimming_single {
   """
 }
 
-process fastq_screen {
+process fastq_screen_single {
   storeDir params.fastqScreenDir
   
   input:
-  tuple val(SRR), path(fastq) from TRIMMED_single_1
+  tuple val(SRR), path(fastq) from TRIMMED_single
 
   output:
-  tuple val(SRR), path(fastq) into TRIMMED_single
-  path("${fastq}_screen.*") 
+  tuple val(SRR), path(fastq) into TRIMMED_single_post_screen
+  tuple path("${SRR}_screen.txt"), path("${SRR}_screen.png"), path("${SRR}_screen.html") into Screen_files
 
   when:
   params.library_preparation == 'single'
 
   """
   fastq_screen --conf /working/fastq-screen/fastq-screen.conf --aligner bwa ${fastq}
+  """
+}
+
+process Trimming_screen_single {
+  input:
+  tuple path(txt), path(png), path(html) from Screen_files
+
+  output:
+  path("procedi.txt") into Alt
+  """
+  tail -n +2 ${txt} > prova_1_screen_2.txt
+  head -n +3 prova_1_screen_2.txt > ${txt}
+  Rscript /working/scriptino.R "${txt}" > procedi.txt
   """
 }
 
@@ -244,12 +294,20 @@ process Alignment_and_sorting_single {
       
   when:
   params.library_preparation == 'single'
+
+  script:
+  Si = siOno.getText()
       
+  if(Si == "yes")      
   """
   bwa mem genome.fasta \
   -t ${task.cpus} \
   ${fastq} \
   | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
+  """
+  else
+  """
+  echo "saltato"
   """
 }
 
