@@ -1,15 +1,15 @@
 // questo deve essere inserito in prima posizione
 nextflow.enable.dsl=2
 
-include { Generate_Ref_files; Downloading_human_genome; Generate_Ref_files_human } from './gen-ref'
-include { FASTQs_download } from './FASTQ-download'
-include { Trimming } from './trimming'
-include { Fastq_screen; Trimming_screen } from './screen'
-include { Alignment_and_sorting_single; Alignment_and_sorting_paired } from './alignment'
-include { Remove_duplicated_reads } from './remove-duplicate'
-include { Extract_coverage_nodup; Extract_coverage } from './extract_coverage'
-include { Variant_calling_nodup; Variant_calling } from './variant_calling'
-include { Make_SNV_list } from './make_snv_list'
+include { Generate_Ref_files; Downloading_human_genome; Generate_Ref_files_human } from './Process/gen-ref'
+include { FASTQs_download } from './Process/FASTQ-download'
+include { Trimming } from './Process/trimming'
+include { Fastq_screen; Trimming_screen } from './Process/screen'
+include { Alignment_and_sorting_single; Alignment_and_sorting_paired } from './Process/alignment'
+include { Remove_duplicated_reads } from './Process/remove-duplicate'
+include { Extract_coverage } from './Process/extract_coverage'
+include { Variant_calling_bwa; Variant_calling_bowtie2 } from './Process/variant_calling'
+include { Make_SNV_list } from './Process/make_snv_list'
 
 
 workflow single {
@@ -60,37 +60,37 @@ workflow paired {
 
 workflow {
 
-    //Downloading_human_genome()
-
-    //Generate_Ref_files_human(Downloading_human_genome.out)
-
     Generate_Ref_files(Channel.value(file(params.fasta)))
 
     if(params.library_preparation == 'single'){
-        
         sin = single(Generate_Ref_files.out[0], Generate_Ref_files.out[1])
-        
-        pair = Channel.value()
+        pair = Channel.empty()
         
     }else{
-        
         pair = paired(Generate_Ref_files.out[0], Generate_Ref_files.out[1])
-
-        sin = Channel.value()
+        sin = Channel.empty()
     }
+
     if(params.remove_duplicates){
         Remove_duplicated_reads(pair.mix(sin))
-        extract_dupli = Extract_coverage_nodup(Remove_duplicated_reads.out)
-        variant_dupli =Variant_calling_nodup(Remove_duplicated_reads.out, Channel.value(file(params.fasta)), Generate_Ref_files.out[2], Generate_Ref_files.out[1])
-        extract = Channel.value()
-        variant = Channel.value()
+        extract_dupli = Extract_coverage(Remove_duplicated_reads.out)
+        if(params.aligner == "bowtie2"){
+            variant_dupli =Variant_calling_bowtie2(Remove_duplicated_reads.out, Channel.value(file(params.fasta)), Generate_Ref_files.out[2], Generate_Ref_files.out[1])
+        }else{
+            variant_dupli = Variant_calling_bwa(Remove_duplicated_reads.out, Channel.value(file(params.fasta)), Generate_Ref_files.out[0], Generate_Ref_files.out[2])
+        }
+        extract = Channel.empty()
+        variant = Channel.empty()
     }else{
         extract = Extract_coverage(pair.mix(sin))
-        variant = Variant_calling(pair.mix(sin))
-        extract_dupli = Channel.value()
-        variant_dupli = Channel.value()
+        if(params.aligner == "bowtie2"){
+            variant = Variant_calling_bowtie2(pair.mix(sin), Channel.value(file(params.fasta)), Generate_Ref_files.out[2], Generate_Ref_files.out[1])
+        }else{
+            variant = Variant_calling_bwa(pair.mix(sin), Channel.value(file(params.fasta)), Generate_Ref_files.out[0], Generate_Ref_files.out[2])
+        }
+        extract_dupli = Channel.empty()
+        variant_dupli = Channel.empty()
     }
 
     Make_SNV_list(Channel.value(file(params.fasta)), variant.mix(variant_dupli).collect(), extract.mix(extract_dupli).collect())
-    
 }

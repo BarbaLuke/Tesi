@@ -1,7 +1,7 @@
 // questo deve essere inserito in prima posizione
 nextflow.enable.dsl=2
 
-include { Generate_Ref_files_screen; Downloading_human_genome; Generate_Ref_files_human } from './gen-ref'
+include { Generate_Ref_files_screen; Downloading_human_genome; Generate_Ref_files_human } from './Process/gen-ref'
 
 
 
