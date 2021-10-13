@@ -44,4 +44,9 @@ plugins-prod
 /intermediate/FASTQ/Others
 /reference/*.bt2
 /reference/*.fai
-/FastQ-Screen/index/*
+/FastQ-Screen/index/hiv/*.bt2
+/FastQ-Screen/index/hiv/*.fasta
+/FastQ-Screen/index/hiv/*.fasta.*
+/FastQ-Screen/index/human/*.fna.*
+/FastQ-Screen/index/human/*.fna
+/FastQ-Screen/index/human/*.bt2
