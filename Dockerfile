@@ -17,7 +17,7 @@ RUN apt-get update -y \
 ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
 
-ADD makeSNVlist.R /working/
-ADD scriptino.R /working/
-ADD FastQ-Screen/fastq-screen.conf /working/fastq-screen/
-ADD FastQ-Screen/index /working/fastq-screen/index
+ADD makeSNVlist.R /
+ADD scriptino.R /
+ADD FastQ-Screen/fastq-screen.conf /FastQ-Screen/
+ADD FastQ-Screen/index /FastQ-Screen/index

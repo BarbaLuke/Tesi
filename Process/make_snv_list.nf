@@ -1,3 +1,5 @@
+SNV_filters = 'PV_THR:0.01 VAR_FREQ_THR:0.05 MIN_COV:100 ALT_READ_THR:5'
+
 process Make_SNV_list {
   
   publishDir params.SNVlistdir, mode:'move'
@@ -12,7 +14,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript /working/makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${params.SNV_filters}
+  Rscript /makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${SNV_filters}
   """
 
   stub:
