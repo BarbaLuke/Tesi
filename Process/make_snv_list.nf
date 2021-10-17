@@ -14,7 +14,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript /makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${SNV_filters}
+  Rscript /work/Tesi-preprocessing-docker-and-dsl2/makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${SNV_filters}
   """
 
   stub:

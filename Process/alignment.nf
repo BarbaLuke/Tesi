@@ -5,7 +5,6 @@ process Alignment_and_sorting_single {
   tag "${SRR}"
       
   input:
-  val siOno
   path "genome.fasta"
   tuple path('genome.fasta.amb'),
         path('genome.fasta.ann'),
@@ -19,8 +18,6 @@ process Alignment_and_sorting_single {
   output:
   tuple val(SRR), path("${SRR}.sorted.bam")
       
-  when:
-  siOno == "yes"
 
   script:
   if( params.aligner == "bwa")
@@ -44,7 +41,6 @@ process Alignment_and_sorting_paired {
   tag "${SRR}"
       
   input:
-  val siOno
   path "genome.fasta"
   tuple path('genome.fasta.amb'),
         path('genome.fasta.ann'),
@@ -53,27 +49,27 @@ process Alignment_and_sorting_paired {
         path('genome.fasta.pac'),
         path('genome.fasta.sa')
   path HIV_1
-  tuple val(SRR), path(fastq_1), path(fastq_2)
+  tuple val(SRR), path(fastq)
       
   output:
   tuple val(SRR), path("${SRR}.sorted.bam") 
-
-  when:
-  siOno == "yes" 
       
   script:
-  if(params.aligner == "bwa")
+  if(params.aligner == "bwa"){
   """
   bwa mem genome.fasta \
   -t ${task.cpus} \
-  ${fastq_1} ${fastq_2} \
+  ${fastq} \
   | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
   """
-  if(params.aligner == "bowtie2")
+  }else if(params.aligner == "bowtie2"){  
   """
-  bowtie2 -x HIV_1 -1 ${fastq_1} -2 ${fastq_2} \
+  bowtie2 -x HIV_1 -1 ${SRR}_out_trim_1.fastq.gz -2 ${SRR}_out_trim_2.fastq.gz \
   | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
   """
+  }else{
+  error "Wrong input: ${params.aligner}. It must be bowtie2 or bwa." 
+  }
 
   stub:
   """

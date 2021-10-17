@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 include { Generate_Ref_files } from './Process/gen-ref'
 include { FASTQs_download } from './Process/FASTQ-download'
 include { Trimming } from './Process/trimming'
-include { Fastq_screen; Trimming_screen } from './Process/screen'
+include { Fastq_screen; Trimming_screen; intermedi } from './Process/screen'
 include { Alignment_and_sorting_single; Alignment_and_sorting_paired } from './Process/alignment'
 include { Remove_duplicated_reads } from './Process/remove-duplicate'
 include { Extract_coverage } from './Process/extract_coverage'
@@ -29,15 +29,19 @@ workflow single {
         error "Wrong input: ${params.FASTQ_input}. It must be a .txt file with a SRR number on each line or a directory with the fastq files." 
     }
 
-    // trimming files from previous condition
-    Trimming(download.mix(FASTQ_files_single))
+    
+    
 
     // FastQ-Screen contamination checks
-    Fastq_screen(Trimming.out[0])
-    Trimming_screen_single(Fastq_screen.out[1])
+    Fastq_screen(download.mix(FASTQ_files_paired))
+    intermedi(Fastq_screen.out[0])
+    Trimming_screen(intermedi.out)
+    
+    // trimming files from previous condition
+    Trimming(Trimming_screen.out, Fastq_screen.out[1])
 
     // alignment of trimmed and checked files
-    Alignment_and_sorting_single(Trimming_screen.out, Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Trimming.out[3])
+    Alignment_and_sorting_single(Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Trimming.out[0])
 
     emit:
     Alignment_and_sorting_single.out
@@ -61,16 +65,17 @@ workflow paired {
     }else{
         error "Wrong input: ${params.FASTQ_input}. It must be a .txt file with a SRR number on each line or a directory with the fastq files." 
     }
-    
-    // trimming files from previous condition
-    Trimming(download.mix(FASTQ_files_paired))
 
     // FastQ-Screen contamination checks
-    Fastq_screen(Trimming.out[2])
-    Trimming_screen(Fastq_screen.out[0])
+    Fastq_screen(download.mix(FASTQ_files_paired))
+    intermedi(Fastq_screen.out[0])
+    Trimming_screen(intermedi.out)
+    
+    // trimming files from previous condition
+    Trimming(Trimming_screen.out, Fastq_screen.out[1])
 
     // alignment of trimmed and checked files
-    Alignment_and_sorting_paired(Trimming_screen.out, Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Trimming.out[4])
+    Alignment_and_sorting_paired(Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Trimming.out[1])
 
     emit:
     Alignment_and_sorting_paired.out

@@ -17,17 +17,19 @@ minlen = '75'
 trimmomatic_settings = "LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen"
 
 process Trimming {
+  storeDir params.fastqScreenDir
   tag "${SRR}"
       
   input:
+  val siOno
   tuple val(SRR), path(fastq)
 
   output:
-  tuple val("${SRR}"), path("${SRR}.trim.fastq.gz") optional true
-  tuple val("${SRR}"), path("${SRR}_1.trim.fastq.gz"), path("${SRR}_2.trim.fastq.gz") optional true
-  tuple val("${SRR}"), path("${SRR}_1.trim.fastq.gz") optional true
-  tuple val("${SRR}"), path("${SRR}.trim.fastq.gz") optional true
-  tuple val("${SRR}"), path("${SRR}_1.trim.fastq.gz"), path("${SRR}_2.trim.fastq.gz") optional true  
+  tuple val("${SRR}"), path("${SRR}_out_trim*.fastq.gz") 
+  tuple val("${SRR}"), path("${SRR}_out_trim*.fastq.gz")
+  
+  when:
+  siOno == "yes"
 
   script:
 
@@ -39,18 +41,20 @@ process Trimming {
     -summary ${SRR}.trim.summary \
     -quiet \
     ${fastq} \
-    ${SRR}.trim.fastq.gz \
+    ${SRR}_out_trim.fastq.gz \
     ${trimmomatic_settings}
     """
+
   }else{
+    
     """
     TrimmomaticPE -phred33 \
     -threads ${task.cpus} \
     -summary ${SRR}.trim.summary \
     -quiet -validatePairs \
     ${fastq} \
-    ${SRR}_1.trim.fastq.gz ${SRR}_1_unpaired.trim.fastq.gz \
-    ${SRR}_2.trim.fastq.gz ${SRR}_2_unpaired.trim.fastq.gz \
+    ${SRR}_out_trim_1.fastq.gz ${SRR}_1_unpaired.trim.fastq.gz \
+    ${SRR}_out_trim_2.fastq.gz ${SRR}_2_unpaired.trim.fastq.gz \
     ${trimmomatic_settings}
     """
   }
