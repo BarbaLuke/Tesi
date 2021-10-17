@@ -14,7 +14,7 @@ slidingwindow = '1:25'
 // MINLEN:<length> 
 minlen = '75'
 
-trimmomatic_settings = 'LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen'
+trimmomatic_settings = "LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen"
 
 process Trimming {
   tag "${SRR}"
@@ -42,9 +42,7 @@ process Trimming {
     ${SRR}.trim.fastq.gz \
     ${trimmomatic_settings}
     """
-
   }else{
-    
     """
     TrimmomaticPE -phred33 \
     -threads ${task.cpus} \

@@ -1,13 +1,13 @@
-// --min-coverage  Minimum read depth at a position to make a call
+// --min-coverage -> Minimum read depth at a position to make a call
 minCoverage = '100'
 
-// --min-var-freq  Minimum variant allele frequency threshold
+// --min-var-freq -> Minimum variant allele frequency threshold
 minVarFreq = '0.05'
 
-// --p-value       Default p-value threshold for calling variants
+// --p-value -> Default p-value threshold for calling variants
 pValue = '0.01'
 
-varscan_settings = '--min-coverage $minCoverage --min-var-freq $minVarFreq --p-value $pValue'
+varscan_settings = "--min-coverage $minCoverage --min-var-freq $minVarFreq --p-value $pValue"
 
 process Variant_calling_bowtie2 {
   storeDir params.VCFdir
@@ -48,7 +48,7 @@ process Variant_calling_bwa {
         path('genome.fasta.bwt'),
         path('genome.fasta.fai'),
         path('genome.fasta.pac'),
-        path('genome.fasta.sa') from genomeIndexed
+        path('genome.fasta.sa')
   path('*.fasta.fai')
       
   output:
