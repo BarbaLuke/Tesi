@@ -14,23 +14,20 @@ slidingwindow = '1:25'
 // MINLEN:<length> 
 minlen = '75'
 
-trimmomatic_settings = "LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen"
+trimmomatic_settings = "LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:TRUE"
 
 process Trimming {
   storeDir params.fastqScreenDir
   tag "${SRR}"
       
   input:
-  val siOno
-  tuple val(SRR), path(fastq)
+  val(SRR)
+  path(fastq)
 
   output:
-  tuple val("${SRR}"), path("${SRR}_out_trim*.fastq.gz") 
-  tuple val("${SRR}"), path("${SRR}_out_trim*.fastq.gz")
+  val("${SRR}")
+  path("${SRR}_out_trim*.fastq.gz") 
   
-  when:
-  siOno == "yes"
-
   script:
 
   if(params.library_preparation == 'single'){

@@ -5,10 +5,12 @@ process Remove_duplicated_reads {
   tag "${SRR}"
     
   input:
-  tuple val(SRR), path(sorted_bam)
+  val(SRR)
+  path(sorted_bam)
       
   output:
-  tuple val(SRR), path("${SRR}.nodup.sorted.bam")
+  val("${SRR}")
+  path("${SRR}.nodup.sorted.bam")
 
   script:      
   """

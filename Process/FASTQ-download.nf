@@ -8,7 +8,9 @@ process FASTQs_download {
   val SRR
 
   output:
-  tuple val("${SRR}"), path("${SRR}*.fastq.gz")
+  val("${SRR}")
+  path("${SRR}*.fastq.gz")
+   
         
   script:
 

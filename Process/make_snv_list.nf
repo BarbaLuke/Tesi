@@ -5,7 +5,7 @@ process Make_SNV_list {
   publishDir params.SNVlistdir, mode:'move'
   
   input:
-  path "genome.fasta"
+  path (genome)
   path VCFs
   path DEPTHs
   
@@ -14,7 +14,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript /work/Tesi-preprocessing-docker-and-dsl2/makeSNVlist.R "${VCFs}" "${DEPTHs}" genome.fasta ${SNV_filters}
+  Rscript /work/Tesi-preprocessing-docker-and-dsl2/makeSNVlist.R "${VCFs}" "${DEPTHs}" ${genome} ${SNV_filters}
   """
 
   stub:

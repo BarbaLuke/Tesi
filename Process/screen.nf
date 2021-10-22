@@ -4,21 +4,23 @@ storeDir params.fastqScreenDir
   tag "${SRR}"
   
   input:
-  tuple val(SRR), path(fastq)
+  val(SRR)
+  path(fastq)
 
   output:
-  tuple val(SRR), path("${SRR}*screen.txt"), path("${SRR}*screen.png"), path("${SRR}*screen.html")
-  tuple val("${SRR}"), path("${SRR}*.tagged_filter.fastq.gz") 
+  val("${SRR}")
+  tuple path("${SRR}_out_trim*screen.txt"), path("${SRR}_out_trim*screen.png"), path("${SRR}_out_trim*screen.html")
+  path("${SRR}_out_trim_*.tagged_filter.fastq.gz")
 
   script:
   if( params.aligner == "bwa"){
     """
-    fastq_screen --conf /work/Tesi-preprocessing-docker-and-dsl2/FastQ-Screen/fastq-screen-bwa.conf --aligner bwa --tag --filter 01 ${fastq}
+    fastq_screen --conf /work/Tesi-preprocessing-docker-and-dsl2/FastQ-Screen/fastq-screen-bwa.conf --inverse --aligner bwa --tag --filter 3- ${fastq}
     """
   
   }else if( params.aligner == "bowtie2"){
     """
-    fastq_screen --conf /work/Tesi-preprocessing-docker-and-dsl2/FastQ-Screen/fastq-screen-bowtie2.conf --aligner bowtie2 --tag --filter 01 ${fastq}
+    fastq_screen --conf /work/Tesi-preprocessing-docker-and-dsl2/FastQ-Screen/fastq-screen-bowtie2.conf --inverse --aligner bowtie2 --tag --filter 3- ${fastq}
     """
   }else{
     error "Wrong input"
@@ -43,12 +45,17 @@ storeDir params.fastqScreenDir
 
 process intermedi{
 
+  tag "${SRR}"
+
   input:
-  tuple val(SRR), path(txt), path(png), path(html)
+  val(SRR)
+  tuple path(txt), path(png), path(html)
   
   output:
   path("fin1.txt")
   path("fin2.txt")
+  val("${SRR}")
+
   
   script:
   
@@ -66,15 +73,16 @@ process intermedi{
   head -n +3 temp2.txt > fin2.txt
   """
   }
-  
-
 }
 
 process Trimming_screen {
 
+  tag "${SRR}"
+
   input:
   path(file1)
   path(file2)
+  val(SRR)
 
   output:
   stdout emit: process
@@ -83,7 +91,7 @@ process Trimming_screen {
   """
   Rscript /work/Tesi-preprocessing-docker-and-dsl2/scriptino.R -t 'fin1.txt' -b 'fin2.txt'
   """
-
+  
   stub:
   """
   printf 'yes'

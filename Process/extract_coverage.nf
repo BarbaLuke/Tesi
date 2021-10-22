@@ -5,7 +5,8 @@ process Extract_coverage {
   tag "${SRR}"
       
   input:
-  tuple val(SRR), path(sorted_bam)
+  val(SRR)
+  path(sorted_bam)
 
   output: 
   path "${SRR}.depth.txt"

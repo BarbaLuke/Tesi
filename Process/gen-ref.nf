@@ -6,8 +6,9 @@ process Generate_Ref_files_screen {
 
   output:
   tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
-  path('HIV_1*')
-  path('*.fasta.fai')
+  path ('*.bt2')
+  tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
+  path ('*.bt2')
 
   script:
   """
@@ -18,7 +19,6 @@ process Generate_Ref_files_screen {
 
   stub:
   """
-  touch ${genomeFA}.fai
   touch ${genomeFA}.ann
   touch ${genomeFA}.bwt
   touch ${genomeFA}.fai
@@ -42,8 +42,9 @@ process Generate_Ref_files {
 
   output:
   tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
-  path('HIV_1*')
-  path('*.fasta.fai')
+  path('*.bt2')
+  tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
+  path ('*.bt2')
 
   script:
   """
