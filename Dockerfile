@@ -16,7 +16,9 @@ RUN apt-get update -y \
 && apt install -y libgd-graph-perl \
 && wget https://github.com/StevenWingett/FastQ-Screen/archive/refs/tags/v0.14.1.tar.gz \
 && tar -xzf v0.14.1.tar.gz \
-&& curl -s https://get.nextflow.io | bash
+&& curl -s https://get.nextflow.io | bash \
+&& wget https://altushost-swe.dl.sourceforge.net/project/bbmap/BBMap_38.94.tar.gz \
+&& tar -xzf BBMap_38.94.tar.gz
 
 ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
