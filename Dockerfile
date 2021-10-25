@@ -23,6 +23,7 @@ RUN apt-get update -y \
 ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
 ENV PATH="/nextflow/:${PATH}"
+ENV PATH="/bbmap/:${PATH}"
 
 
 ARG USER_ID
