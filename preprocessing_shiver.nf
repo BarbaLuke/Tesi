@@ -3,6 +3,9 @@ nextflow.enable.dsl=2
 include { Generate_Ref_files } from './Process/gen-ref'
 include { FASTQs_download } from './Process/FASTQ-download'
 include { Trimming } from './Process/trimming'
+include { Contigs } from './Process/contigs'
+include { Align_Contigs } from './Process/align_contigs'
+include { Map_Reads } from './Process/map_reads'
 include { Fastq_screen; Trimming_screen; intermedi } from './Process/screen'
 include { Alignment_and_sorting } from './Process/alignment'
 include { Remove_duplicated_reads } from './Process/remove-duplicate'
@@ -47,8 +50,6 @@ workflow single {
 }*/
 
 workflow paired {
-    take: index_bwa
-     index_bowtie2
 
     main:
     download = FASTQs_download(Channel.from(file(params.FASTQ_input).readLines()))
@@ -68,9 +69,9 @@ workflow paired {
     */
 
     // FastQ-Screen contamination checks
-    Trimming(download)
+    Contigs(download)
 
-    Fastq_screen(Trimming.out[0], Trimming.out[1])
+    /*Fastq_screen(Trimming.out[0], Trimming.out[1])
     
     //intermedi(Fastq_screen.out[0], Fastq_screen.out[1])
     //Trimming_screen(intermedi.out)
@@ -82,18 +83,23 @@ workflow paired {
     Repair(Fastq_screen.out[0], Fastq_screen.out[2])
 
     // alignment of trimmed and checked files
-    Alignment_and_sorting(Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Repair.out[0], Repair.out[1])
+    Alignment_and_sorting(Channel.value(file(params.fasta)), index_bwa, index_bowtie2, Repair.out[0], Repair.out[1])*/
     
     emit:
-    Alignment_and_sorting.out[0]
-    Alignment_and_sorting.out[1]
+    Contigs.out[0]
+    Contigs.out[1]
 }
 
 workflow {
 
-    Generate_Ref_files(Channel.value(file(params.fasta)))
+    //Generate_Ref_files(Channel.value(file(params.fasta)))
 
-    paired(Generate_Ref_files.out[0], Generate_Ref_files.out[1])
+    //paired()
+    FASTQs_download(Channel.from(file(params.FASTQ_input).readLines()))
+    Contigs(FASTQs_download.out[0], FASTQs_download.out[1])
+    Align_Contigs(Contigs.out[0], Contigs.out[1])
+    Map_Reads(Align_Contigs.out[0], Contigs.out[2], FASTQs_download.out[2], Align_Contigs.out[2], Align_Contigs.out[3])
+
 /*
     // remove duplicates or not
     if(params.remove_duplicates){

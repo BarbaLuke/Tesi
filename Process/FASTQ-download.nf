@@ -1,7 +1,4 @@
 process FASTQs_download {
-
-  storeDir params.FASTQdir
-
   tag "${SRR}" 
 
   input:
@@ -9,6 +6,7 @@ process FASTQs_download {
 
   output:
   val("${SRR}")
+  path("${SRR}*.fastq.gz")
   path("${SRR}*.fastq.gz")
    
         

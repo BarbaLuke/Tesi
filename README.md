@@ -6,6 +6,7 @@ Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSi
 ***
 * [Nextflow](https://www.nextflow.io/)
 * [Docker](https://www.docker.com/)
+* [Shiver](https://github.com/ChrisHIV/shiver)
 
 ## Prerequisites
 ***
@@ -14,30 +15,19 @@ Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSi
 
 ## How to install
 ***
-Installation is just about build Docker image to create container where to run the pipeline from Nextflow. Once downloaded this project and inside main directory, just run the following command:
+Installation is just about build Docker image to create container where to run the pipeline from Nextflow and download Shiver. Once downloaded this project and inside main directory, just run the following commands:
 ```
-$ docker build -t preprocessing_index -f Dockerfile.index .
-
+$ mkdir setting 
+$ shiver-1.5.8/shiver_init.sh setting MyConfig.sh reference/HIV_1.fasta reference/MyAdapters.fasta reference/MyPrimers.fasta
+$ docker build -t preprocessing_shiver -f Dockerfile.index .
 ```
-At the end of the execution the image will have been created starting from Dockerfile. The image has been tagged with preprocessing.
+(!IMPORTANT follow the exact commands order)
+At the end of the execution the image will have been created starting from Dockerfile. The image has been tagged with preprocessing_shiver. Shiver has been initialized and the settings are stored in /setting directory
 
 ## How to use
 ***
-Once created the Docker image you have only to run this command:
-
-* for preprocessing index used by FastQ-Screen
-```
-$ ./nextflow run pre-processing_index.nf -with-docker preprocessing_index -c nextflow_dsl2.config
-```
-
-* after this first pipeline, need to build next image for pipeline processing. This image takes some output from the previous pipeline to build the right context 
-
-```
-$ docker build -t preprocessing .
-```
-
+Once created the Docker image and settings for Shiver you have only to run this command:
 * now can run the pipeline 
-
 ```
-$ ./nextflow run pre-processing.nf -with-docker preprocessing -c nextflow_dsl2.config
+$ ./nextflow run preprocessing_shiver.nf -with-docker preprocessing_shiver -c nextflow_dsl2.config
 ```
