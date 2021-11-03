@@ -32,8 +32,11 @@ process Map_Reads {
         //cut.ifEmpty('Hello')
        //if(cut == 'Hello'){
             """
+            gunzip ${fastq}
+            awk '{if (NR%4 == 1) {print $1 $2 $3 "/1"} else print}' ${SRR} _1.fastq > corr_${SRR} _1.fastq
+            awk '{if (NR%4 == 1) {print $1 $2 $3 "/2"} else print}' ${SRR} _2.fastq > corr_${SRR} _2.fastq
             ./shiver-1.5.8/shiver_map_reads.sh setting MyConfig.sh ${contigs} ${SRR} \
-            ${blast} ${raw} ${fastq}
+            ${blast} ${raw} corr_${SRR} _1.fastq corr_${SRR} _2.fastq
             """ 
        // }else{
        //     """

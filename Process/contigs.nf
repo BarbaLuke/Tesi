@@ -21,7 +21,7 @@ process Contigs {
   }else{
     
     """
-    iva  -f ${SRR}_1.fastq.gz -r ${SRR}_1.fastq.gz MyOutputDirectory${SRR}
+    iva -t 4  -f ${SRR}_1.fastq.gz -r ${SRR}_1.fastq.gz MyOutputDirectory${SRR}
     """
   }
 
