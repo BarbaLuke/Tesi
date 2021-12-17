@@ -1,25 +1,19 @@
 process Extract_coverage {
-      
-  storeDir params.COVERAGEdir
-      
   tag "${SRR}"
       
   input:
-  val(SRR)
-  path(sorted_bam)
+  tuple val(SRR), path(sorted_bam), path(sorted_bam_bai)
 
   output: 
-  path "${SRR}.depth.txt"
+  path ("${SRR}.depth.txt")
 
   script:      
   """
-  samtools index -b ${sorted_bam}
   samtools depth -a ${sorted_bam} > ${SRR}.depth.txt
   """
 
   stub:
   """
   touch ${SRR}.depth.txt
-  """
-      
+  """  
 }

@@ -1,38 +1,54 @@
 process FASTQs_download {
-  tag "${SRR}" 
+  echo true
+  tag "${SRR}"
 
   input:
   val SRR
-
+  path(ciaone)
   output:
-  val("${SRR}")
-  path("${SRR}*.fastq.gz")
-  path("${SRR}*.fastq.gz")
-   
-        
-  script:
+  val(SRR)
 
-  if(params.library_preparation == 'single'){
-    """
-    fastq-dump --gzip ${SRR}
-    """
+  script: 
+  //println ciaone.text
+  """
+  head ${ciaone}
+  """
+  //paired = "PAIRED"
+  /*if(paired_or_single.toString().trim() == paired[0]){
+    if(params.download == "local"){
+      """
+      fastq-dump --split-files ${SRR}
+      """
+    }else{
+      """
+      #!/bin/sh
+      fasterq-dump --split-files ${SRR}
+      """
+    }
   }else{
-    """
-    fastq-dump --split-files --gzip ${SRR}
-    """
-  }
-
+    if(params.download == "env"){
+      """
+      fastq-dump ${SRR}
+      """
+    }else{
+      """
+      #!/bin/sh
+      fasterq-dump ${SRR}
+      """
+    }
+  }*/
+  
   stub:
-
-  if(params.library_preparation == 'single'){
+  paired = "PAIRED"
+  if(paired_or_single[0] == paired[0]){
     """
-    touch ${SRR}.fastq.gz
+    > ${SRR}_1.fastq
+    > ${SRR}_2.fastq
     """
   }else{
     """
-    touch ${SRR}_1.fastq.gz
-    touch ${SRR}_2.fastq.gz
+    > ${SRR}.fastq
+
     """
   }
-
 }

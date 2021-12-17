@@ -7,7 +7,7 @@ leading = '25'
 trailing = '25'
 
 // Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold.
-// SLIDINGWINDOW:<windowSize>:<requiredQuality> 
+// SLIDINGWINDOW:<windowSize>:<requiredQuality>
 slidingwindow = '1:25'
 
 // Drop the read if it is below a specified length
@@ -17,55 +17,40 @@ minlen = '75'
 trimmomatic_settings = "LEADING:$leading TRAILING:$trailing SLIDINGWINDOW:$slidingwindow MINLEN:$minlen ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:TRUE"
 
 process Trimming {
-  storeDir params.fastqScreenDir
   tag "${SRR}"
       
   input:
-  val(SRR)
-  path(fastq)
+  tuple val(SRR), path(fastq), val(paired_or_single)
 
   output:
-  val("${SRR}")
-  path("${SRR}_out_trim*.fastq.gz") 
+  tuple val(SRR), path("${SRR}_out_trim*.fastq"), val(paired_or_single)
+  tuple val(SRR), path("${SRR}_screen_out_trim*.fastq"), val(paired_or_single)
   
   script:
 
-  if(params.library_preparation == 'single'){
-                
     """
-    TrimmomaticSE -phred33 \
-    -threads ${task.cpus} \
-    -summary ${SRR}.trim.summary \
-    -quiet \
+    java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar PE -quiet -phred33 -validatePairs \
     ${fastq} \
-    ${SRR}_out_trim.fastq.gz \
+    ${SRR}_out_trim_1.fastq ${SRR}_1_unpaired.trim.fastq \
+    ${SRR}_out_trim_2.fastq ${SRR}_2_unpaired.trim.fastq \
     ${trimmomatic_settings}
+    touch ${SRR}_screen_out_trim_1.fastq
+    touch ${SRR}_screen_out_trim_2.fastq
     """
-
-  }else{
-    
-    """
-    TrimmomaticPE -phred33 \
-    -threads ${task.cpus} \
-    -summary ${SRR}.trim.summary \
-    -quiet -validatePairs \
-    ${fastq} \
-    ${SRR}_out_trim_1.fastq.gz ${SRR}_1_unpaired.trim.fastq.gz \
-    ${SRR}_out_trim_2.fastq.gz ${SRR}_2_unpaired.trim.fastq.gz \
-    ${trimmomatic_settings}
-    """
-  }
 
   stub:
-
-  if(params.library_preparation == 'single'){     
+  paired = "PAIRED"
+  if(paired_or_single[0] == paired[0]){   
     """
-    touch ${SRR}.trim.fastq.gz
+    touch ${SRR}_out_trim_1.fastq
+    touch ${SRR}_out_trim_2.fastq
+    touch ${SRR}_screen_out_trim_1.fastq
+    touch ${SRR}_screen_out_trim_2.fastq
     """
   }else{
     """
-    touch ${SRR}_1.trim.fastq.gz
-    touch ${SRR}_2.trim.fastq.gz
+    touch ${SRR}_out_trim.fastq
+    touch ${SRR}_screen_out_trim.fastq
     """
   }
 }

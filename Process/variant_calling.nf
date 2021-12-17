@@ -10,13 +10,10 @@ pValue = '0.01'
 varscan_settings = "--min-coverage $minCoverage --min-var-freq $minVarFreq --p-value $pValue"
 
 process Variant_calling{
-  storeDir params.VCFdir
-    
   tag "${SRR}"
       
   input:
-  val(SRR)
-  path(sorted_bam)
+  tuple val(SRR), path(sorted_bam), path(sorted_bam_bai)
   path (genome)
   tuple path("${genome}.amb"),
         path("${genome}.ann"),
@@ -30,37 +27,6 @@ process Variant_calling{
   path "${SRR}.vcf"
 
   script:      
-  """
-  samtools mpileup -f ${genome} ${sorted_bam} --output sample.mpileup
-  varscan pileup2snp sample.mpileup ${varscan_settings} > ${SRR}.vcf  
-  """
-
-  stub:
-  """
-  touch ${SRR}.vcf
-  """
-}
-
-process Variant_calling_bwa {
-  storeDir params.VCFdir
-    
-  tag "${SRR}"
-      
-  input:
-  val(SRR)
-  path(sorted_bam)
-  path (genome)
-  tuple path("${genome}.amb"),
-        path("${genome}.ann"),
-        path("${genome}.bwt"),
-        path("${genome}.fai"),
-        path("${genome}.pac"),
-        path("${genome}.sa")
-      
-  output:
-  path "${SRR}.vcf"
-
-  script:
   """
   samtools mpileup -f ${genome} ${sorted_bam} --output sample.mpileup
   varscan pileup2snp sample.mpileup ${varscan_settings} > ${SRR}.vcf  

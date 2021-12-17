@@ -1,10 +1,8 @@
 process Alignment_and_sorting {
-
-  storeDir params.BAMdir
-      
   tag "${SRR}"
       
   input:
+  tuple val(SRR), path(fastq_align), val(paired_or_single)
   path (genome)
   tuple path("${genome}.amb"),
         path("${genome}.ann"),
@@ -13,35 +11,43 @@ process Alignment_and_sorting {
         path("${genome}.pac"),
         path("${genome}.sa")
   path HIV_1
-  val(SRR)
-  path(fastq)
       
   output:
-  val("${SRR}")
-  path("${SRR}.sorted.bam") 
+  tuple val(SRR), path("${SRR}_sorted.bam"), path("${SRR}_sorted.bam.bai")
       
   script:
-  if(params.aligner == "bwa"){
-  """
-  bwa mem ${genome} ${fastq} \
-  | samtools sort -o ${SRR}.sorted.bam
-  """
-  }else if(params.aligner == "bowtie2"){  
-    if(params.library_preparation == 'single'){
-      """
-      bowtie2 -x HIV_1 ${fastq} | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
-      """
+  paired = "PAIRED"
+    if(paired_or_single[0] == paired[0]){
+      if( params.aligner == "bwa"){
+        """
+        bwa mem ${genome} ${fastq_align} \
+        | samtools sort -o ${SRR}_sorted.bam | samtools index -b
+        """
+      }else if( params.aligner == "bowtie2"){
+        """
+        bowtie2 -x HIV_1 -1 ${SRR}_align_1.fastq -2 ${SRR}_align_2.fastq \
+        | samtools sort -o ${SRR}_sorted.bam | samtools index -b
+        """
+      }else{
+        error "Wrong params for aligner"
+      }
     }else{
-      """
-      bowtie2 -x HIV_1 -1 ${SRR}_out_trim_1_repaired.fastq.gz -2 ${SRR}_out_trim_2_repaired.fastq.gz \
-      | samtools sort -@${task.cpus} -o ${SRR}.sorted.bam
-      """
+      if( params.aligner == "bwa"){
+        """
+        bwa mem ${genome} ${fastq} \
+        | samtools sort -o ${SRR}_sorted.bam | samtools index 
+        """
+      }else if( params.aligner == "bowtie2"){
+        """
+        bowtie2 -x HIV_1 ${fastq} | samtools sort -o ${SRR}_sorted.bam | samtools index 
+        """
+      }else{
+        error "Wrong params for aligner"
+      }
     }
-  }else{
-  error "Wrong input: ${params.aligner}. It must be bowtie2 or bwa." 
-  }
   stub:
   """
-  touch ${SRR}.sorted.bam
+  touch ${SRR}_sorted.bam
+  touch ${SRR}_sorted.bam.bai
   """
 }
