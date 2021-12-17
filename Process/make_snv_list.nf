@@ -2,8 +2,6 @@ SNV_filters = 'PV_THR:0.01 VAR_FREQ_THR:0.05 MIN_COV:100 ALT_READ_THR:5'
 
 process Make_SNV_list {
   
-  publishDir params.SNVlistdir, mode:'move'
-  
   input:
   path (genome)
   path VCFs

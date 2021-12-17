@@ -1,6 +1,5 @@
 process Generate_Ref_files_screen {
-  storeDir 'FastQ-Screen/index/hiv'
-
+  
   input:
   path genomeFA
 
@@ -43,8 +42,6 @@ process Generate_Ref_files {
   output:
   tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
   path('*.bt2')
-  tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
-  path ('*.bt2')
 
   script:
   """

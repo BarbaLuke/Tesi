@@ -2,39 +2,34 @@ process Contigs {
   tag "${SRR}"
 
   input:
-  val(SRR)
-  path(fastq)
+  tuple val(SRR), path(fastq), val(paired_or_single)
 
   output:
-  val("${SRR}")
-  path("MyOutputDirectory${SRR}/contigs.fasta")
-  path("MyOutputDirectory${SRR}/contigs.fasta")
+  tuple val(SRR), path("MyOutputDirectory${SRR}/contigs.fasta"), val(paired_or_single), path(fastq)
   
   script:
-
-  if(params.library_preparation == 'single'){
-
+  paired = "PAIRED"
+  if(paired_or_single[0] == paired[0]){
     """
-    iva --fr ${SRR}.fastq.gz MyOutputDirectory${SRR}
+    iva -t 4 -f corr_${SRR}_1.fastq -r corr_${SRR}_2.fastq MyOutputDirectory${SRR}
     """
-
   }else{
-    
     """
-    iva -t 4  -f ${SRR}_1.fastq.gz -r ${SRR}_1.fastq.gz MyOutputDirectory${SRR}
-    """
+    iva --fr ${SRR}.fastq MyOutputDirectory${SRR}
+    """   
   }
 
   stub:
-
-  if(params.library_preparation == 'single'){     
+  paired = "PAIRED"
+  if(paired_or_single[0] == paired[0]){
     """
-    touch ${SRR}.trim.fastq.gz
+    mkdir MyOutputDirectory${SRR}
+    touch MyOutputDirectory${SRR}/contigs.fasta
     """
   }else{
     """
-    touch ${SRR}_1.trim.fastq.gz
-    touch ${SRR}_2.trim.fastq.gz
-    """
+    mkdir MyOutputDirectory${SRR}
+    touch MyOutputDirectory${SRR}/contigs.fasta
+    """   
   }
 }
