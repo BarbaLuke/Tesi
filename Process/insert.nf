@@ -2,10 +2,10 @@ process Insert_slash {
   tag "${SRR}"
 
   input:
-  tuple val(SRR), path(fastq), val(paired_or_single)
+  val(SRR), path(fastq)
     
   output:
-  tuple val(SRR), path("corr_${SRR}_*.fastq"), val(paired_or_single)
+  tuple val(SRR), path("corr_${SRR}_*.fastq")
   
   script:
   """
