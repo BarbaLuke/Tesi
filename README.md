@@ -1,6 +1,5 @@
 # Preprocessing for Mutational signatures (via Docker)
-Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Docker.
-
+Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Docker for HIV.
 
 ## Technologies
 ***
@@ -25,8 +24,8 @@ At the end of the execution the image will have been created starting from Docke
 
 ## How to use
 ***
-Once created the Docker image and settings for Shiver you have only to run this command:
+Once created the Docker image you have only to run this command:
 * now can run the pipeline (an example)
 ```
-$  ./nextflow run preprocess.nf -profile docker --aligner bowtie2 --mode shiver
+$  ./nextflow run preprocess.nf -profile docker --aligner ( bowtie2 || bwa || smalt ) --mode shiver
 ```

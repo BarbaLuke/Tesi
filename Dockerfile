@@ -1,8 +1,8 @@
 FROM ubuntu:20.04
 
-ADD MyConfig_bowtie2.sh /
-ADD MyConfig_bwa.sh /
-ADD MyConfig_smalt.sh /
+ADD MyConfig_bowtie2.sh /shiver_settings
+ADD MyConfig_bwa.sh /shiver_settings
+ADD MyConfig_smalt.sh /shiver_settings
 ADD reference/HIV_1.fasta /
 ADD reference/MyAdapters.fasta /
 ADD reference/MyPrimers.fasta /
@@ -45,9 +45,9 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 && mkdir setting_bowtie2 \
 && mkdir setting_bwa \
 && mkdir setting_smalt \
-&& ./shiver-1.5.8/shiver_init.sh setting_bowtie2 MyConfig_bowtie2.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
-&& ./shiver-1.5.8/shiver_init.sh setting_bwa MyConfig_bwa.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
-&& ./shiver-1.5.8/shiver_init.sh setting_smalt MyConfig_smalt.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& ./shiver-1.5.8/shiver_init.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& ./shiver-1.5.8/shiver_init.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& ./shiver-1.5.8/shiver_init.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
 ## need for align sorting
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y samtools \
 ## need for trimming

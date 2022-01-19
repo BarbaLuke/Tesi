@@ -1,9 +1,9 @@
 nextflow.enable.dsl=2
 
-include { FASTQs_download } from './Process/FASTQ-download'
-include { Contigs } from './Process/contigs'
-include {  Align_Contigs; Map_Reads } from './Process/shiver'
-include { Insert_slash } from './Process/insert'
+include { FASTQs_download } from './Processes/FASTQ-download'
+include { Contigs } from './Processes/contigs'
+include {  Align_Contigs; Map_Reads } from './Processes/shiver'
+include { Insert_slash } from './Processes/insert'
 
 workflow {
     FASTQs_download(Channel.from(file(params.FASTQ_input).readLines()))

@@ -10,7 +10,7 @@ process Align_Contigs {
     script:
     if(params.aligner == "bowtie2"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR}
+        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -19,7 +19,7 @@ process Align_Contigs {
         """
     }else if(params.aligner == "bwa"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR}
+        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -28,7 +28,7 @@ process Align_Contigs {
         """
     }else if(params.aligner == "smalt"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR}
+        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -66,27 +66,27 @@ process Map_Reads {
     if(params.aligner == "bowtie2"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """
     }else if(params.aligner == "bwa"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """
     }else if(params.aligner == "smalt"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """

@@ -20,8 +20,16 @@ process FASTQs_download {
   }
   
   stub:
+  if(params.download == 'local'){
     """
-    > ${SRR}_1.fastq
-    > ${SRR}_2.fastq
+    touch ${SRR}_1.fastq
+    touch ${SRR}_2.fastq
     """
+  }else{
+    """
+    #!/bin/sh
+    touch ${SRR}_1.fastq
+    touch ${SRR}_2.fastq
+    """
+  }
 }
