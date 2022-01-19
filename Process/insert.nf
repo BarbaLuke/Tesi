@@ -2,7 +2,7 @@ process Insert_slash {
   tag "${SRR}"
 
   input:
-  val(SRR), path(fastq)
+  tuple val(SRR), path(fastq)
     
   output:
   tuple val(SRR), path("corr_${SRR}_*.fastq")

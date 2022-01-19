@@ -1,6 +1,8 @@
 FROM ubuntu:20.04
 
-ADD MyConfig.sh /
+ADD MyConfig_bowtie2.sh /
+ADD MyConfig_bwa.sh /
+ADD MyConfig_smalt.sh /
 ADD reference/HIV_1.fasta /
 ADD reference/MyAdapters.fasta /
 ADD reference/MyPrimers.fasta /
@@ -40,8 +42,12 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 && pip install biopython==1.67 \
 && wget https://github.com/ChrisHIV/shiver/archive/refs/tags/v1.5.8.tar.gz \
 && tar -xvzf v1.5.8.tar.gz \
-&& mkdir setting \
-&& ./shiver-1.5.8/shiver_init.sh setting MyConfig.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& mkdir setting_bowtie2 \
+&& mkdir setting_bwa \
+&& mkdir setting_smalt \
+&& ./shiver-1.5.8/shiver_init.sh setting_bowtie2 MyConfig_bowtie2.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& ./shiver-1.5.8/shiver_init.sh setting_bwa MyConfig_bwa.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
+&& ./shiver-1.5.8/shiver_init.sh setting_smalt MyConfig_smalt.sh HIV_1.fasta MyAdapters.fasta MyPrimers.fasta \
 ## need for align sorting
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y samtools \
 ## need for trimming
@@ -84,9 +90,10 @@ ENV PATH="/Trimmomatic-0.39/:${PATH}"
 ENV PATH="/nextflow/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
 
-ARG USER_ID
-ARG GROUP_ID
+## COMMAND TO RUN ONLY IN GIACINTO
+##ARG USER_ID
+##ARG GROUP_ID
 
-RUN addgroup --gid $GROUP_ID user
-RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
-USER user
+##RUN addgroup --gid $GROUP_ID user
+##RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
+##USER user

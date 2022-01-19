@@ -1,45 +1,44 @@
-process Setting_shiver {
-
-    input:
-    path(shiver)
-    path(genomeFA)
-    path(config_bowtie)
-    path(config_bwa)
-    path(config_smalt)
-    path(adapters)
-    path(primers)
-
-    output:
-    tuple path("setting_bowtie2"), path("setting_bwa"), path("setting_smalt")
-
-    script:
-    """
-    ${shiver}/shiver_init.sh setting_bowtie2 ${config_bowtie} ${genomeFA} ${adapters} ${primers} 
-    ${shiver}/shiver_init.sh setting_bwa ${config_bwa} ${genomeFA} ${adapters} ${primers}
-    ${shiver}/shiver_init.sh setting_smalt ${config_smalt} ${genomeFA} ${adapters} ${primers}
-    """
-}
-
 process Align_Contigs {
     tag "${SRR}"
-      
+
     input:
     tuple val(SRR), path(contigs), path(fastq)
-    path(config)
-    path(config_dir)
 
     output:
     tuple val(SRR), path("${SRR}.blast"), path("${SRR}_raw_wRefs.fasta"), path("${SRR}_cut_wRefs.fasta"), path(contigs), path(fastq)
-  
+
     script:
-    """
-    /shiver-1.5.8/shiver_align_contigs.sh ${config_dir} ${config} ${contigs} ${SRR}
-    if [ -e ${SRR}_cut_wRefs.fasta ]; then
+    if(params.aligner == "bowtie2"){
+        """
+        /shiver-1.5.8/shiver_align_contigs.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR}
+        if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
-    else
+        else
         touch ${SRR}_cut_wRefs.fasta
-    fi
-    """
+        fi
+        """
+    }else if(params.aligner == "bwa"){
+        """
+        /shiver-1.5.8/shiver_align_contigs.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR}
+        if [ -e ${SRR}_cut_wRefs.fasta ]; then
+        touch ciao.txt
+        else
+        touch ${SRR}_cut_wRefs.fasta
+        fi
+        """
+    }else if(params.aligner == "smalt"){
+        """
+        /shiver-1.5.8/shiver_align_contigs.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR}
+        if [ -e ${SRR}_cut_wRefs.fasta ]; then
+        touch ciao.txt
+        else
+        touch ${SRR}_cut_wRefs.fasta
+        fi
+        """
+    }else{
+        error "Invalid Aligner"
+
+    }
 
     stub:
     """
@@ -54,8 +53,6 @@ process Map_Reads {
 
     input:
     tuple val(SRR), path(blast), path(raw), path(cut), path(contigs), path(fastq)
-    path(config)
-    path(config_dir)
 
     output:
     tuple val(SRR), path("${SRR}.sorted.bam"), path("${SRR}_remap.bam.bai")
@@ -66,14 +63,37 @@ process Map_Reads {
     path("${SRR}_BaseFreqs.csv")
     
     script:
-    """
-    if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh ${config_dir} ${config} ${contigs} ${SRR} ${blast} ${cut} ${fastq}
-    else
-        /shiver-1.5.8/shiver_map_reads.sh ${config_dir} ${config} ${contigs} ${SRR} ${blast} ${raw} ${fastq}
-    fi
-    samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
-    """
+    if(params.aligner == "bowtie2"){
+        """
+        if [ -s ${cut} ]; then
+        /shiver-1.5.8/shiver_map_reads.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        else
+        /shiver-1.5.8/shiver_map_reads.sh /setting_bowtie2 /MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        fi
+        samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
+        """
+    }else if(params.aligner == "bwa"){
+        """
+        if [ -s ${cut} ]; then
+        /shiver-1.5.8/shiver_map_reads.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        else
+        /shiver-1.5.8/shiver_map_reads.sh /setting_bwa /MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        fi
+        samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
+        """
+    }else if(params.aligner == "smalt"){
+        """
+        if [ -s ${cut} ]; then
+        /shiver-1.5.8/shiver_map_reads.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        else
+        /shiver-1.5.8/shiver_map_reads.sh /setting_smalt /MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        fi
+        samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
+        """
+    }else{
+        error "Invalid aligner"
+
+    }
 
     stub:
     """

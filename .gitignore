@@ -50,3 +50,4 @@ plugins-prod
 /FastQ-Screen/index/human/*.fna.*
 /FastQ-Screen/index/human/*.fna
 /FastQ-Screen/index/human/*.bt2
+/example/*
