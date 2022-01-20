@@ -17,7 +17,6 @@ Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSi
 Installation is just about build Docker image to create container where to run the pipeline from Nextflow. Once downloaded this project and inside main directory, just run the following commands:
 ```
 $ docker pull ncbi/sra-tools
-$ docker image ncbi/sra-tools:latest sra_downloads:latest
 $ docker build -t preprocessing .
 ```
 At the end of the execution the image will have been created starting from Dockerfile. The image has been tagged with preprocessing. Any shiver update should be done before creating the docker images and the folder settings for each aligner must also be updated.
