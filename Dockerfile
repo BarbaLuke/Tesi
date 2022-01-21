@@ -6,6 +6,8 @@ ADD MyConfig_smalt.sh /shiver_settings
 ADD reference/HIV_1.fasta /
 ADD reference/MyAdapters.fasta /
 ADD reference/MyPrimers.fasta /
+ADD makeSNVlist.R /
+ADD makeSNVlistSHIVER.R /
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 && DEBIAN_FRONTEND="noninteractive" apt update -y \
@@ -59,7 +61,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 ## need to align
 && DEBIAN_FRONTEND="noninteractive" apt install -y bowtie2 \
 && DEBIAN_FRONTEND="noninteractive" apt install -y bwa \
-&& apt-get install -y smalt \
+&& DEBIAN_FRONTEND="noninteractive" apt-get install -y smalt \
 ## need for decontamination using FASTQ-SCREEN
 && DEBIAN_FRONTEND="noninteractive" apt install -y perl \
 && DEBIAN_FRONTEND="noninteractive" apt install -y libgd-graph-perl \

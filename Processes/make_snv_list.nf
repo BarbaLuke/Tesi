@@ -12,7 +12,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript /work/Tesi-preprocessing-docker-and-dsl2/makeSNVlist.R "${VCFs}" "${DEPTHs}" ${genome} ${SNV_filters}
+  Rscript makeSNVlist.R "${VCFs}" "${DEPTHs}" ${genome} ${SNV_filters}
   """
 
   stub:
@@ -20,3 +20,23 @@ process Make_SNV_list {
   touch SNV_list.txt
   """
 } 
+
+process Make_SNV_list_SHIVER {
+  
+  input:
+  path (genome)
+  path CSV
+  
+  output:
+  path 'SNV_list.txt'
+  
+  script:
+  """
+  Rscript makeSNVlistSHIVER.R
+  """
+
+  stub:
+  """
+  touch SNV_list.txt
+  """
+}
