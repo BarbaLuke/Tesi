@@ -12,11 +12,11 @@ include { Variant_calling } from './Processes/variant_calling'
 include { Make_SNV_list; Make_SNV_list_SHIVER } from './Processes/make_snv_list'
 
 if(params.shiver == "local"){
-    shiver_dir = Channel.fromPath( 'shiver-1.5.8' , type: 'dir', checkIfExists: true)
-    setting_dir = Channel.fromPath( 'shiver_settings', type: 'dir', checkIfExists: true )
+    shiver_dir = Channel.value(file( 'shiver-1.5.8' , type: 'dir', checkIfExists: true))
+    setting_dir = Channel.value(file( 'shiver_settings', type: 'dir', checkIfExists: true ))
 }else{
-    shiver_dir = Channel.fromPath( '/shiver-1.5.8' , type: 'dir', checkIfExists: true)
-    setting_dir = Channel.fromPath( '/shiver_settings', type: 'dir', checkIfExists: true )
+    shiver_dir = Channel.value(file( '/shiver-1.5.8' , type: 'dir', checkIfExists: true))
+    setting_dir = Channel.value(file( '/shiver_settings', type: 'dir', checkIfExists: true ))
 }
 workflow {
     FASTQs_download(Channel.from(file(params.FASTQ_input).readLines()))
@@ -25,7 +25,7 @@ workflow {
         Contigs(Insert_slash.out)
         Align_Contigs(Contigs.out, shiver_dir, setting_dir)
         Map_Reads(Align_Contigs.out, shiver_dir, setting_dir)
-        Make_SNV_list_SHIVER(Channel.from(file('makeSNVlistSHIVER.R')), Channel.value(file(params.fasta)), Map_Reads.out[2].collect())
+        Make_SNV_list_SHIVER(Channel.value(file('makeSNVlistSHIVER.R')), Channel.value(file(params.fasta)), Map_Reads.out[2].collect())
     }else if(params.mode == "classic"){
         Generate_Ref_files(Channel.value(file(params.fasta)))
         Trimming(FASTQs_download.out)
