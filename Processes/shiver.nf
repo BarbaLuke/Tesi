@@ -1,8 +1,10 @@
 process Align_Contigs {
-    tag "${SRR}"
+tag "${SRR}"
 
     input:
     tuple val(SRR), path(contigs), path(fastq)
+    path(shive)
+    path(setting_dir)
 
     output:
     tuple val(SRR), path("${SRR}.blast"), path("${SRR}_raw_wRefs.fasta"), path("${SRR}_cut_wRefs.fasta"), path(contigs), path(fastq)
@@ -10,7 +12,7 @@ process Align_Contigs {
     script:
     if(params.aligner == "bowtie2"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR}
+        ${shive}/shiver_align_contigs.sh ${setting_dir}/setting_bowtie2 ${setting_dir}/MyConfig_bowtie2.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -19,7 +21,7 @@ process Align_Contigs {
         """
     }else if(params.aligner == "bwa"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR}
+        ${shive}/shiver_align_contigs.sh ${setting_dir}/setting_bwa ${setting_dir}/MyConfig_bwa.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -28,7 +30,7 @@ process Align_Contigs {
         """
     }else if(params.aligner == "smalt"){
         """
-        /shiver-1.5.8/shiver_align_contigs.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR}
+        ${shive}/shiver_align_contigs.sh ${setting_dir}/setting_smalt ${setting_dir}/MyConfig_smalt.sh ${contigs} ${SRR}
         if [ -e ${SRR}_cut_wRefs.fasta ]; then
         touch ciao.txt
         else
@@ -53,6 +55,9 @@ process Map_Reads {
 
     input:
     tuple val(SRR), path(blast), path(raw), path(cut), path(contigs), path(fastq)
+    path(shive)
+    path(setting_dir)
+
 
     output:
     tuple val(SRR), path("${SRR}.sorted.bam"), path("${SRR}_remap.bam.bai")
@@ -66,27 +71,27 @@ process Map_Reads {
     if(params.aligner == "bowtie2"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_bowtie2 ${setting_dir}/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bowtie2 shiver_settings/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_bowtie2 ${setting_dir}/MyConfig_bowtie2.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """
     }else if(params.aligner == "bwa"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_bwa ${setting_dir}/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_bwa shiver_settings/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_bwa ${setting_dir}/MyConfig_bwa.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """
     }else if(params.aligner == "smalt"){
         """
         if [ -s ${cut} ]; then
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_smalt ${setting_dir}/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${cut} ${fastq}
         else
-        /shiver-1.5.8/shiver_map_reads.sh shiver_settings/setting_smalt shiver_settings/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
+        ${shive}/shiver_map_reads.sh  ${setting_dir}/setting_smalt ${setting_dir}/MyConfig_smalt.sh ${contigs} ${SRR} ${blast} ${raw} ${fastq}
         fi
         samtools sort -o ${SRR}.sorted.bam ${SRR}.bam
         """

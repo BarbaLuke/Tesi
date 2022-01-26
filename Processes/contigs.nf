@@ -9,7 +9,7 @@ process Contigs {
   
   script:
   """
-  iva -t 4 -f corr_${SRR}_1.fastq -r corr_${SRR}_2.fastq MyOutputDirectory${SRR}
+  iva -t ${task.cpus} -f corr_${SRR}_1.fastq -r corr_${SRR}_2.fastq MyOutputDirectory${SRR}
   """
 
   stub:

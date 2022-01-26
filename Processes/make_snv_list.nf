@@ -1,9 +1,9 @@
-SNV_filters = 'PV_THR:0.01 VAR_FREQ_THR:0.05 MIN_COV:100 ALT_READ_THR:5'
+SNV_filters = "PV_THR:0.01 VAR_FREQ_THR:0.05 MIN_COV:100 ALT_READ_THR:5"
 
 process Make_SNV_list {
   
   input:
-  path (genome)
+  path genome
   path VCFs
   path DEPTHs
   
@@ -12,7 +12,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript makeSNVlist.R "${VCFs}" "${DEPTHs}" ${genome} ${SNV_filters}
+  Rscript /makeSNVlist.R "${VCFs}" "${DEPTHs}" HIV_1.fasta ${SNV_filters}
   """
 
   stub:
@@ -24,6 +24,7 @@ process Make_SNV_list {
 process Make_SNV_list_SHIVER {
   
   input:
+  path script
   path (genome)
   path CSV
   
@@ -32,7 +33,7 @@ process Make_SNV_list_SHIVER {
   
   script:
   """
-  Rscript makeSNVlistSHIVER.R
+  Rscript ${script} "${CSV}" ${genome} ${task.cpus}
   """
 
   stub:
