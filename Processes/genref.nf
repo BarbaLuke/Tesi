@@ -35,3 +35,26 @@ process Generate_Ref_files {
   touch HIV_1.sma
   """
 }
+
+process Download_Human_Genome {
+
+  input:
+  val HUgenome
+
+  output:
+  tuple path("GRCh38_latest_genomic.fna"), path("ref")
+
+  script:
+  """
+  wget ${HUgenome}
+  gunzip GRCh38_latest_genomic.fna.gz
+  bbsplit.sh ref=GRCh38_latest_genomic.fna
+  """
+
+  stub:
+  """
+  touch GRCh38_latest_genomic.fna
+  mkdir ref
+  """
+
+}

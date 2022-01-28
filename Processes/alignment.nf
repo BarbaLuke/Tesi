@@ -18,21 +18,47 @@ process Alignment_and_sorting {
       
   script:
     if( params.aligner == "bwa"){
-      """
-      bwa mem ${genome} ${fastq_align_1} ${fastq_align_2} | samtools sort -o ${SRR}_sorted.bam
-      samtools index ${SRR}_sorted.bam -b
-      """
+      if(params.deduplicate == true){
+        """
+        bwa mem ${genome} ${fastq_align_1} ${fastq_align_2} | samtools sort -o ${SRR}_sorted_dupli.bam
+        samtools index ${SRR}_sorted_dupli.bam -b
+        PicardCommandLine MarkDuplicates I=${SRR}_sorted_dupli.bam O=${SRR}_sorted.bam M=${SRR}.nodup.sorted.metrics.txt REMOVE_DUPLICATES=true
+        """
+      }else{
+        """
+        bwa mem ${genome} ${fastq_align_1} ${fastq_align_2} | samtools sort -o ${SRR}_sorted.bam
+        samtools index ${SRR}_sorted.bam -b
+        """
+      }
     }else if( params.aligner == "bowtie2"){
-      """
-      bowtie2 -x HIV_1 -1 ${fastq_align_1} -2 ${fastq_align_2} | samtools sort -o ${SRR}_sorted.bam
-      samtools index ${SRR}_sorted.bam -b
-      """
+      if(params.deduplicate == true){
+        """
+        bowtie2 -x HIV_1 -1 ${fastq_align_1} -2 ${fastq_align_2} | samtools sort -o ${SRR}_sorted_dupli.bam
+        samtools index ${SRR}_sorted_dupli.bam -b
+        PicardCommandLine MarkDuplicates I=${SRR}_sorted_dupli.bam O=${SRR}_sorted.bam M=${SRR}.nodup.sorted.metrics.txt REMOVE_DUPLICATES=true
+        """
+      }else{
+        """
+        bowtie2 -x HIV_1 -1 ${fastq_align_1} -2 ${fastq_align_2} | samtools sort -o ${SRR}_sorted.bam
+        samtools index ${SRR}_sorted.bam -b
+        """
+        
+      }
     }else if( params.aligner == "smalt"){
-      """
-      smalt map -o mapped.sam HIV_1 ${fastq_align_1} ${fastq_align_2}
-      samtools sort mapped.sam -o ${SRR}_sorted.bam
-      samtools index ${SRR}_sorted.bam -b
-      """
+      if(params.deduplicate == true){
+        """
+        smalt map -o mapped.sam HIV_1 ${fastq_align_1} ${fastq_align_2}
+        samtools sort mapped.sam -o ${SRR}_sorted_dupli.bam
+        samtools index ${SRR}_sorted_dupli.bam -b
+        PicardCommandLine MarkDuplicates I=${SRR}_sorted_dupli.bam O=${SRR}_sorted.bam M=${SRR}.nodup.sorted.metrics.txt REMOVE_DUPLICATES=true
+        """
+      }else{
+        """
+        smalt map -o mapped.sam HIV_1 ${fastq_align_1} ${fastq_align_2}
+        samtools sort mapped.sam -o ${SRR}_sorted.bam
+        samtools index ${SRR}_sorted.bam -b
+        """
+      }
     }else{
       error "Invalid aligner"
     }
