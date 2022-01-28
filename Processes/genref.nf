@@ -1,7 +1,7 @@
 process Generate_Ref_files {
 
   input:
-  path genomeFA
+  path ref
 
   output:
   tuple path('*.fasta.amb'), path('*.fasta.ann'), path('*.fasta.bwt'), path('*.fasta.fai'), path('*.fasta.pac'), path('*.fasta.sa')
@@ -10,29 +10,29 @@ process Generate_Ref_files {
 
   script:
   """
-  samtools faidx ${genomeFA} -o ${genomeFA}.fai 
-  bwa index ${genomeFA}
-  bowtie2-build ${genomeFA} HIV_1
-  smalt index -k 14 -s 8 HIV_1 ${genomeFA}
+  samtools faidx ${ref} -o ${ref}.fai 
+  bwa index ${ref}
+  bowtie2-build ${ref} reference
+  smalt index -k 14 -s 8 reference ${ref}
   """
 
   stub:
   """
-  touch ${genomeFA}.fai
-  touch ${genomeFA}.ann
-  touch ${genomeFA}.bwt
-  touch ${genomeFA}.fai
-  touch ${genomeFA}.pac
-  touch ${genomeFA}.sa
-  touch ${genomeFA}.amb
-  touch HIV_1.1.bt2
-  touch HIV_1.rev.2.bt2
-  touch HIV_1.rev.1.bt2
-  touch HIV_1.4.bt2
-  touch HIV_1.3.bt2
-  touch HIV_1.2.bt2
-  touch HIV_1.smi
-  touch HIV_1.sma
+  touch ${ref}.fai
+  touch ${ref}.ann
+  touch ${ref}.bwt
+  touch ${ref}.fai
+  touch ${ref}.pac
+  touch ${ref}.sa
+  touch ${ref}.amb
+  touch reference.1.bt2
+  touch reference.rev.2.bt2
+  touch reference.rev.1.bt2
+  touch reference.4.bt2
+  touch reference.3.bt2
+  touch reference.2.bt2
+  touch reference.smi
+  touch reference.sma
   """
 }
 

@@ -58,14 +58,14 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 ## need for trimming
 && wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip \
 && unzip Trimmomatic-0.39.zip \
-## need for Re-Pair reads from decontamination or trimming (not yet)
-##&& wget https://altushost-swe.dl.sourceforge.net/project/bbmap/BBMap_38.94.tar.gz \
-##&& tar -xzf BBMap_38.94.tar.gz \
+## need for Decontamination
+&& wget https://altushost-swe.dl.sourceforge.net/project/bbmap/BBMap_38.94.tar.gz \
+&& tar -xzf BBMap_38.94.tar.gz \
 ## need to align
 && DEBIAN_FRONTEND="noninteractive" apt install -y bowtie2 \
 && DEBIAN_FRONTEND="noninteractive" apt install -y bwa \
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y smalt \
-## need for decontamination using FASTQ-SCREEN (not yet)
+## FASTQ-SCREEN (not yet)
 ##&& DEBIAN_FRONTEND="noninteractive" apt install -y perl \
 ##&& DEBIAN_FRONTEND="noninteractive" apt install -y libgd-graph-perl \
 ##&& DEBIAN_FRONTEND="noninteractive" apt-get install -y zlib1g-dev libbz2-dev liblzma-dev \
@@ -82,7 +82,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 ## need for VCF
 && DEBIAN_FRONTEND="noninteractive" apt install -y picard-tools \
 && DEBIAN_FRONTEND="noninteractive" apt install -y varscan \
-## need to download fastq sample from SRA archives in NCBI
+## need to download fastq sample from SRA archives in NCBI (simplest version to use)
 && wget http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.0/sratoolkit.2.8.0-ubuntu64.tar.gz \
 && tar xzvf sratoolkit.2.8.0-ubuntu64.tar.gz  --owner root --group root --no-same-owner \
 ## installing packages for R script
@@ -90,9 +90,8 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 && Rscript -e "install.packages('foreach')"\
 && Rscript -e "install.packages('doFuture')"
 
-
 ##ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
-##ENV PATH="/bbmap/:${PATH}"
+ENV PATH="/bbmap/:${PATH}"
 ENV PATH="/Trimmomatic-0.39/:${PATH}"
 ##ENV PATH="/nextflow/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"

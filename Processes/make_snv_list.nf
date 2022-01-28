@@ -12,7 +12,7 @@ process Make_SNV_list {
   
   script:
   """
-  Rscript /makeSNVlist.R "${VCFs}" "${DEPTHs}" HIV_1.fasta ${SNV_filters}
+  Rscript /makeSNVlist.R "${VCFs}" "${DEPTHs}" ${genome} ${SNV_filters}
   """
 
   stub:
