@@ -11,12 +11,12 @@ include { Extract_coverage } from './Processes/extract_coverage'
 include { Variant_calling } from './Processes/variant_calling'
 include { Make_SNV_list; Make_SNV_list_SHIVER } from './Processes/make_snv_list'
 
-if(params.shiver == "local"){
+if(params.shiver == "local" && params.mode == "shiver"){
     shiver_dir = Channel.value(file( 'shiver-1.5.8' , type: 'dir', checkIfExists: true))
     setting_dir = Channel.value(file( 'shiver_settings', type: 'dir', checkIfExists: true ))
 }else{
-    shiver_dir = Channel.value(file( '/shiver-1.5.8' , type: 'dir', checkIfExists: true))
-    setting_dir = Channel.value(file( '/shiver_settings', type: 'dir', checkIfExists: true ))
+    shiver_dir = Channel.value(file( '/shiver-1.5.8' , type: 'dir'))
+    setting_dir = Channel.value(file( '/shiver_settings', type: 'dir'))
 }
 workflow {
     FASTQs_download(Channel.from(file(params.FASTQ_input).readLines()))

@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ADD shiver_settings/MyConfig_bowtie2.sh /
 ADD shiver_settings/MyConfig_bwa.sh /
 ADD shiver_settings/MyConfig_smalt.sh /
-ADD reference/HIV_1.fasta /
+ADD reference/reference.fasta /
 ADD reference/MyAdapters.fasta /
 ADD reference/MyPrimers.fasta /
 ADD makeSNVlist.R /
@@ -90,11 +90,10 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update -y \
 && Rscript -e "install.packages('foreach')"\
 && Rscript -e "install.packages('doFuture')"
 
-
-ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
-ENV PATH="/bbmap/:${PATH}"
+##ENV PATH="/FastQ-Screen-0.14.1/:${PATH}"
+##ENV PATH="/bbmap/:${PATH}"
 ENV PATH="/Trimmomatic-0.39/:${PATH}"
-ENV PATH="/nextflow/:${PATH}"
+##ENV PATH="/nextflow/:${PATH}"
 ENV PATH="/sratoolkit.2.8.0-ubuntu64/bin/:${PATH}"
 
 ## COMMAND TO RUN ONLY IN GIACINTO
