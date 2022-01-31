@@ -1,5 +1,5 @@
 # Preprocessing for Mutational signatures (via Docker)
-Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Docker for HIV.
+Preprocessing pipeline for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Nextflow and Containerization Technology for HIV.
 
 ## Technologies
 ***
