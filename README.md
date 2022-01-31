@@ -30,7 +30,7 @@ This is a pipeline that could be used to pre-process FASTQ files (**from Paired-
 
 ## How to start
 ***
-Installation is just about:
+Starting is just about:
 1. Build Docker image to create container where to run the pipeline from Nextflow. Once downloaded this project and inside main directory, just run the following commands:
 > ```
 > $ docker pull ncbi/sra-tools
@@ -58,9 +58,9 @@ Installation is just about:
 
     to do this (adapt the pipeline to the purpose) need to know about SHIVER's method (linked above).
 
-## How to start
+## How to run
 ***
-Once created the Docker image, you have to see trough the file ***nextflow.config*** to check you have only to run this commands choosing the right options:
+Once created the Docker image and changed the parameters (and files), you have to run this commands choosing the right options:
 > ```
 > $  ./nextflow run preprocess.nf -profile docker --aligner [ bowtie2 || bwa || smalt ] --mode [ shiver || classic ]
 > ```
@@ -112,4 +112,4 @@ $  ./nextflow run preprocess.nf -profile local --aligner [ bowtie2 || bwa || sma
 
 * ``` --aligner ( bowtie2 || bwa || smalt ) ``` : simply choosing the suitable aligner.
 
-* ``` --mode ( shiver || classic ) ``` : this options makes you choosing trough classic manner (aligne against a reference sequence) or SHIVER method (follow the link above in section technologies to discover SHIVER).
+* ``` --mode ( shiver || classic ) ``` : this options makes you choosing trough classic manner (align against a reference sequence) or SHIVER method (follow the link above in section technologies to discover SHIVER).
