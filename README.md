@@ -1,5 +1,5 @@
 # Preprocessing for Mutational signatures (via Docker)
-Preprocessing pipeline for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Nextflow and Containerization Technology for HIV.
+Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Docker for HIV.
 
 ## Technologies
 ***
@@ -12,21 +12,28 @@ Preprocessing pipeline for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig)
 This is a pipeline that could be used to pre-process FASTQ files (**from Paired-End Libraries**) from VIRAL RNA (given by SRA accession number) using SHIVER method or classic (trim, align and variant calling):
  - inputs: 
     - SRA accession number list [ ***SRA_list.txt*** ] (one per line)
- - output ( saved ):
+ - major output ( saved ):
     - SNV (Single Nucleotide Variant) list [ ***SNV_list.txt*** ] (under certain customizable constraints)
     - aligned files for every samples [ ***SRR\*.BAM*** ] using one of three possible aligners (bowtie2, bwa, smalt)
     - SHIVER output files
-    - fastq files resulting from trimming [ ***SRR\*_out_trim_{1,2}.fastq*** ]
     - VCF files resulting from variant calling [ ***SRR\*.vcf*** ]
 ## Prerequisites
 ***
 ### Essential:
 - Nextflow prerequisites (see [quick start](https://www.nextflow.io/))
+- Knowledge of SHIVER method
 ### Not essential:
 - easy way:
     - Docker installed (see [how to get Docker](https://docs.docker.com/get-docker/))
 - custom way:
     - Ubuntu (20.4) it may work with other versions (or OS) as well but has not been tested yet.
+
+## Constraints
+***
+This pipeline was designed for NGS data that have the following characteristics or limits:
+- paired ends data only
+- need to have SRA accession number of samples
+- need to know about reads name for SHIVER methods (the process is insert.nf)
 
 ## How to start
 ***
