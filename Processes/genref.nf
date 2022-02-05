@@ -42,7 +42,8 @@ process Download_Human_Genome {
   val HUgenome
 
   output:
-  tuple path("GRCh38_latest_genomic.fna"), path("ref/*")
+  path("GRCh38_latest_genomic.fna")
+  path("ref", type: 'dir')
 
   script:
   """

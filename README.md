@@ -1,5 +1,5 @@
 # Preprocessing for Mutational signatures (via Docker)
-Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) using Docker for HIV.
+Re-styling preprocessing for [VirMutSig](https://github.com/BIMIB-DISCo/VirMutSig) for HIV.
 
 ## Technologies
 ***
@@ -15,8 +15,11 @@ This is a pipeline that could be used to pre-process FASTQ files (**from Paired-
  - major output ( saved ):
     - SNV (Single Nucleotide Variant) list [ ***SNV_list.txt*** ] (under certain customizable constraints)
     - aligned files for every samples [ ***SRR\*.BAM*** ] using one of three possible aligners (bowtie2, bwa, smalt)
-    - SHIVER output files
+    - SHIVER major output files
     - VCF files resulting from variant calling [ ***SRR\*.vcf*** ]
+
+Workflow:
+![Workflow](images/workflow.png "Workflow")
 ## Prerequisites
 ***
 ### Essential:
@@ -26,7 +29,7 @@ This is a pipeline that could be used to pre-process FASTQ files (**from Paired-
 - easy way:
     - Docker installed (see [how to get Docker](https://docs.docker.com/get-docker/))
 - custom way:
-    - Ubuntu (20.4) it may work with other versions (or OS) as well but has not been tested yet.
+    - Ubuntu (20.4) it may work with other versions (or OS) as well but has not been tested yet (see docker file for all the info about dependencies).
 
 ## Constraints
 ***
@@ -55,7 +58,7 @@ Starting is just about:
     4. *profiles->local->process->withName:Make_SNV_list_SHIVER->cpus* : this parameter should make faster (or slower) the execution of SNV list file computing (need this for SHIVER method) based on the number of core used in this process.
     5. make the same as 3. and 4. for profile ***docker***
 
-5. Overwrite :
+5. Overwrite ( if necessary ):
     1. ***shiver_setting/MyConfig_bowtie2.sh***
     2. ***shiver_setting/MyConfig_bwa.sh***
     3. ***shiver_setting/MyConfig_smalt.sh***
@@ -120,3 +123,10 @@ $  ./nextflow run preprocess.nf -profile local --aligner [ bowtie2 || bwa || sma
 * ``` --aligner ( bowtie2 || bwa || smalt ) ``` : simply choosing the suitable aligner.
 
 * ``` --mode ( shiver || classic ) ``` : this options makes you choosing trough classic manner (align against a reference sequence) or SHIVER method (follow the link above in section technologies to discover SHIVER).
+
+## Customize
+***
+The following processes can be customized by overwrite some variables in the corresponding files:
+* ***trimming.nf***
+* ***variant_calling.nf***
+* ***make_snv_list.nf*** with ``` --mode  classic ```
